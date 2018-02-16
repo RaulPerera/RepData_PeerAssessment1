@@ -10,38 +10,52 @@ output:
 Activity File is already in Github Repository so downloading the file is not necessary
 The file is zipped so the unzip function was used in addition to read.csv
 
-```{r Load Data, echo=TRUE}
+
+```r
 Activity <- read.csv(unzip("activity.zip"))
 ```
 
 ## What is mean total number of steps taken per day?
 Calculate the total number of steps per day and remove NA's
-```{r Daily Steps, echo=TRUE, message=FALSE}
+
+```r
 library(dplyr)
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.4.3
+```
+
+```r
 DailyActivity <-group_by(Activity, date) %>%
   summarise(DailyTotal = sum(steps, na.rm=TRUE))
 ```
 
 A histogram of the total number of steps taken per day
-```{r Steps Histogram, echo=TRUE, message=FALSE}
+
+```r
 hist(DailyActivity$DailyTotal)
 ```
 
+![](PA1_template_files/figure-html/Steps Histogram-1.png)<!-- -->
+
 
 Once the total steps have been calculated, mean and median steps per day can also be calculated
-```{r Mean Steps, echo=TRUE, message=FALSE}
+
+```r
 MeanSteps <- mean(DailyActivity$DailyTotal, na.rm=TRUE)
 MedianSteps <- median(DailyActivity$DailyTotal, na.rm=TRUE)
 ```
  
-*The mean number of steps taken per day is `r MeanSteps`
+*The mean number of steps taken per day is 9354.2295082
 
-*The median number of steps taken per day is `r MedianSteps`
+*The median number of steps taken per day is 10395
 
 
 ## What is the average daily activity pattern?
 
-```{r Interval Steps, echo=TRUE, message=FALSE}
+
+```r
 IntervalActivity <-group_by(Activity, interval) %>%
   summarise(IntervalAverage = mean(steps, na.rm=TRUE))
 plot(
@@ -54,18 +68,26 @@ plot(
   )
 ```
 
+![](PA1_template_files/figure-html/Interval Steps-1.png)<!-- -->
 
-```{r Interval Max Steps, echo=TRUE, message=FALSE}
+
+
+```r
 maxInterval <- filter(IntervalActivity,IntervalAverage==max(IntervalAverage))
 ```
-The 5-minute interval, that contains the maximum number of steps on average across all the days in the dataset is `r maxInterval$interval`
+
+```
+## Warning: package 'bindrcpp' was built under R version 3.4.3
+```
+The 5-minute interval, that contains the maximum number of steps on average across all the days in the dataset is 835
 
 ## Imputing missing values
 
-```{r # of missing values, echo=TRUE}
+
+```r
 MissingValues <- filter(Activity, is.na(steps))
 ```
-The total number of missing values is `r nrow(MissingValues)`
+The total number of missing values is 2304
 
 These missing values can create biases in future analysis.  To avoid that, they will be imputed based on the average for that 5-minute interval across all days. Doing this will be a 3 step process
 
@@ -73,7 +95,8 @@ These missing values can create biases in future analysis.  To avoid that, they 
 2. Use mutate and ifelse to replace missing values with IntervalAverage
 3. Drop Interval Average
 
-```{r impute missing values, echo=TRUE}
+
+```r
 ImputedActivity<- 
   left_join(Activity, IntervalActivity, by = c("interval" = "interval")) %>%
   mutate(steps = ifelse(is.na(steps),IntervalAverage,steps)) %>%
@@ -81,30 +104,35 @@ ImputedActivity<-
 ```
 
 Calculate the total number of steps per day using this imputed dataset
-```{r Daily Steps Imputed, echo=TRUE, message=FALSE}
+
+```r
 DailyImputedActivity <-group_by(ImputedActivity, date) %>%
   summarise(DailyImputedTotal = sum(steps))
 ```
 
 A histogram of the total number of steps taken per day using this imputed dataset
-```{r Steps Histogram Imputed, echo=TRUE, message=FALSE}
+
+```r
 hist(DailyImputedActivity$DailyImputedTotal)
 ```
 
+![](PA1_template_files/figure-html/Steps Histogram Imputed-1.png)<!-- -->
+
 
 Once the total steps have been calculated, mean and median steps per day can also be calculated
-```{r Mean Steps Imputed, echo=TRUE, message=FALSE}
+
+```r
 MeanStepsImputed <- mean(DailyImputedActivity$DailyImputedTotal)
 MedianStepsImputed <- median(DailyImputedActivity$DailyImputedTotal)
 ```
  
-*The original mean number of steps taken per day is `r MeanSteps`
+*The original mean number of steps taken per day is 9354.2295082
 
-*The mean number of steps after imputing missing values is `r MeanStepsImputed`
+*The mean number of steps after imputing missing values is 1.0766189\times 10^{4}
 
-*The original median number of steps taken per day is `r MedianSteps`
+*The original median number of steps taken per day is 10395
 
-*The medain number of steps after imputing missing values is `r MedianStepsImputed`
+*The medain number of steps after imputing missing values is 1.0766189\times 10^{4}
 
 Both mean and median number of steps increased after imputing missing values
 
@@ -112,8 +140,16 @@ Both mean and median number of steps increased after imputing missing values
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
-```{r weekdays, echo=TRUE, message=FALSE}
+
+```r
 library(lubridate)
+```
+
+```
+## Warning: package 'lubridate' was built under R version 3.4.3
+```
+
+```r
 library(lattice)
 ImputedActivityWeekday<- 
   mutate(ImputedActivity,dayofweek = wday(date))%>%
@@ -129,5 +165,7 @@ xyplot(
   ,data = ImputedActivityWeekday
   ,type = "l")
 ```
+
+![](PA1_template_files/figure-html/weekdays-1.png)<!-- -->
 
 Weekdays have a much sharper spike in number of steps taken at the beginning of the day and a smaller spike at the end of the day.  One hypothesis is this is due to users exercising before or after work.
