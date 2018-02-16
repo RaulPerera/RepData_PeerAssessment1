@@ -3,6 +3,8 @@ title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
+  md_document:
+    variant: markdown_github
 ---
 
 
