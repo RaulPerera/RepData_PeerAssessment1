@@ -2,7 +2,8 @@
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
-    keep_md: true
+    fig_caption: yes
+    keep_md: yes
   md_document:
     variant: markdown_github
 ---
@@ -39,7 +40,7 @@ A histogram of the total number of steps taken per day
 hist(DailyActivity$DailyTotal)
 ```
 
-![](PA1_template_files/figure-html/Steps Histogram-1.png)<!-- -->
+![](PA1_template_files/figure-html/StepsHistogram-1.png)<!-- -->
 
 
 Once the total steps have been calculated, mean and median steps per day can also be calculated
@@ -70,7 +71,7 @@ plot(
   )
 ```
 
-![](PA1_template_files/figure-html/Interval Steps-1.png)<!-- -->
+![](PA1_template_files/figure-html/IntervalSteps-1.png)<!-- -->
 
 
 
@@ -118,7 +119,7 @@ A histogram of the total number of steps taken per day using this imputed datase
 hist(DailyImputedActivity$DailyImputedTotal)
 ```
 
-![](PA1_template_files/figure-html/Steps Histogram Imputed-1.png)<!-- -->
+![](PA1_template_files/figure-html/StepsHistogramImputed-1.png)<!-- -->
 
 
 Once the total steps have been calculated, mean and median steps per day can also be calculated

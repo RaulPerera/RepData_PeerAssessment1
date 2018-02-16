@@ -2,7 +2,8 @@
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
-    keep_md: true
+    fig_caption: yes
+    keep_md: yes
   md_document:
     variant: markdown_github
 ---
@@ -12,26 +13,26 @@ output:
 Activity File is already in Github Repository so downloading the file is not necessary
 The file is zipped so the unzip function was used in addition to read.csv
 
-```{r Load Data, echo=TRUE}
+```{r LoadData, echo=TRUE}
 Activity <- read.csv(unzip("activity.zip"))
 ```
 
 ## What is mean total number of steps taken per day?
 Calculate the total number of steps per day and remove NA's
-```{r Daily Steps, echo=TRUE, message=FALSE}
+```{r DailySteps, echo=TRUE, message=FALSE}
 library(dplyr)
 DailyActivity <-group_by(Activity, date) %>%
   summarise(DailyTotal = sum(steps, na.rm=TRUE))
 ```
 
 A histogram of the total number of steps taken per day
-```{r Steps Histogram, echo=TRUE, message=FALSE}
+```{r StepsHistogram, echo=TRUE, message=FALSE}
 hist(DailyActivity$DailyTotal)
 ```
 
 
 Once the total steps have been calculated, mean and median steps per day can also be calculated
-```{r Mean Steps, echo=TRUE, message=FALSE}
+```{r MeanSteps, echo=TRUE, message=FALSE}
 MeanSteps <- mean(DailyActivity$DailyTotal, na.rm=TRUE)
 MedianSteps <- median(DailyActivity$DailyTotal, na.rm=TRUE)
 ```
@@ -43,7 +44,7 @@ MedianSteps <- median(DailyActivity$DailyTotal, na.rm=TRUE)
 
 ## What is the average daily activity pattern?
 
-```{r Interval Steps, echo=TRUE, message=FALSE}
+```{r IntervalSteps, echo=TRUE, message=FALSE}
 IntervalActivity <-group_by(Activity, interval) %>%
   summarise(IntervalAverage = mean(steps, na.rm=TRUE))
 plot(
@@ -57,14 +58,14 @@ plot(
 ```
 
 
-```{r Interval Max Steps, echo=TRUE, message=FALSE}
+```{r IntervalMaxSteps, echo=TRUE, message=FALSE}
 maxInterval <- filter(IntervalActivity,IntervalAverage==max(IntervalAverage))
 ```
 The 5-minute interval, that contains the maximum number of steps on average across all the days in the dataset is `r maxInterval$interval`
 
 ## Imputing missing values
 
-```{r # of missing values, echo=TRUE}
+```{r NumberOfmissingvalues, echo=TRUE}
 MissingValues <- filter(Activity, is.na(steps))
 ```
 The total number of missing values is `r nrow(MissingValues)`
@@ -75,7 +76,7 @@ These missing values can create biases in future analysis.  To avoid that, they 
 2. Use mutate and ifelse to replace missing values with IntervalAverage
 3. Drop Interval Average
 
-```{r impute missing values, echo=TRUE}
+```{r imputemissingvalues, echo=TRUE}
 ImputedActivity<- 
   left_join(Activity, IntervalActivity, by = c("interval" = "interval")) %>%
   mutate(steps = ifelse(is.na(steps),IntervalAverage,steps)) %>%
@@ -83,19 +84,19 @@ ImputedActivity<-
 ```
 
 Calculate the total number of steps per day using this imputed dataset
-```{r Daily Steps Imputed, echo=TRUE, message=FALSE}
+```{r DailyStepsImputed, echo=TRUE, message=FALSE}
 DailyImputedActivity <-group_by(ImputedActivity, date) %>%
   summarise(DailyImputedTotal = sum(steps))
 ```
 
 A histogram of the total number of steps taken per day using this imputed dataset
-```{r Steps Histogram Imputed, echo=TRUE, message=FALSE}
+```{r StepsHistogramImputed, echo=TRUE, message=FALSE}
 hist(DailyImputedActivity$DailyImputedTotal)
 ```
 
 
 Once the total steps have been calculated, mean and median steps per day can also be calculated
-```{r Mean Steps Imputed, echo=TRUE, message=FALSE}
+```{r MeanStepsImputed, echo=TRUE, message=FALSE}
 MeanStepsImputed <- mean(DailyImputedActivity$DailyImputedTotal)
 MedianStepsImputed <- median(DailyImputedActivity$DailyImputedTotal)
 ```
